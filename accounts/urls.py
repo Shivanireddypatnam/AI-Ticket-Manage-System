@@ -6,6 +6,9 @@ from .views import (
     CustomerOnlyView,
     CurrentUserView,
     CustomerRegistrationView,
+        GoogleLoginView,
+    GoogleCallbackView,
+
 )
 
 urlpatterns = [
@@ -14,4 +17,7 @@ urlpatterns = [
     path("admin-only/", AdminOnlyView.as_view(), name="admin-only"),
     path("agent-only/", AgentOnlyView.as_view(), name="agent-only"),
     path("customer-only/", CustomerOnlyView.as_view(), name="customer-only"),
+    path("google/login/", GoogleLoginView.as_view(), name="google-login"),
+
+path("google/callback/", GoogleCallbackView.as_view(), name="google-callback"),
 ]
