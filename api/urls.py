@@ -7,8 +7,11 @@ from .views import (
     AgentTicketResponseView,
     CustomerTicketListView,
     AdminTicketListView,
-    AdminComplaintListView
+    AdminComplaintListView,
+    FAQChatbotView
 )
+
+
 
 urlpatterns = [
     path('accounts/', include('accounts.urls')),
@@ -51,4 +54,9 @@ urlpatterns = [
     AdminComplaintListView.as_view(),
     name='admin-complaints'
    ),
+   path(
+    'chatbot/',
+    FAQChatbotView.as_view(),
+    name='faq-chatbot'
+    ),
 ]

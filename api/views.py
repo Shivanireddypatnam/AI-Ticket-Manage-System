@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Complaint, Ticket, TicketResponse
+from .models import Complaint, Ticket, TicketResponse, FAQ
 from .serializers import (
     ComplaintSerializer,
     TicketResponseSerializer,
@@ -17,6 +17,10 @@ from .serializers import (
     AdminTicketSerializer
 )
 from accounts.permissions import IsCustomerRole, IsAgentRole, IsAdminRole
+
+from .ai_service import get_faq_answer
+
+
 
 # Create your views here.
 
@@ -167,3 +171,37 @@ class AdminComplaintListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Complaint.objects.all().order_by('-created_at')
+
+class FAQChatbotView(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCustomerRole
+    ]
+
+    def post(self, request):
+
+        question = request.data.get('question', '').strip()
+
+        if not question:
+            return Response(
+                {'error': 'Please enter a question.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        faqs = FAQ.objects.filter(
+            is_active=True
+        ).order_by('id')
+
+        answer = get_faq_answer(question, faqs)
+
+        if answer is None:
+            return Response({
+                'question': question,
+                'answer': 'Sorry, I could not find a suitable answer. Please contact customer support.'
+            })
+
+        return Response({
+            'question': question,
+            'answer': answer
+        })
