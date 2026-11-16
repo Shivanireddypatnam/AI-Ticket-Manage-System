@@ -8,7 +8,8 @@ from .views import (
     CustomerTicketListView,
     AdminTicketListView,
     AdminComplaintListView,
-    FAQChatbotView
+    FAQChatbotView,
+    AgentSuggestedReplyView
 )
 
 
@@ -58,5 +59,10 @@ urlpatterns = [
     'chatbot/',
     FAQChatbotView.as_view(),
     name='faq-chatbot'
+    ),
+    path(
+    'agent/tickets/<int:ticket_id>/suggest-reply/',
+    AgentSuggestedReplyView.as_view(),
+    name='agent-suggested-reply'
     ),
 ]

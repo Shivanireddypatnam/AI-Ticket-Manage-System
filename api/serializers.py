@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import Complaint, Ticket, TicketResponse
+from .models import Complaint, Ticket, TicketResponse, FAQ
 from .ai_service import classify_complaint, summarize_complaint
 
 
@@ -111,4 +111,22 @@ class AdminTicketSerializer(serializers.ModelSerializer):
             'status',
             'created_at',
             'responses'
+        ]
+
+class FAQSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FAQ
+
+        fields = [
+            'id',
+            'question',
+            'answer',
+            'is_active',
+            'created_at'
+        ]
+
+        read_only_fields = [
+            'id',
+            'created_at'
         ]

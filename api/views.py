@@ -18,7 +18,7 @@ from .serializers import (
 )
 from accounts.permissions import IsCustomerRole, IsAgentRole, IsAdminRole
 
-from .ai_service import get_faq_answer
+from .ai_service import get_faq_answer , generate_agent_reply
 
 
 
@@ -133,6 +133,37 @@ class AgentTicketResponseView(generics.CreateAPIView):
             ticket=ticket,
             agent=self.request.user
         )
+
+
+class AgentSuggestedReplyView(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsAgentRole
+    ]
+
+    def get(self, request, ticket_id):
+
+        ticket = get_object_or_404(
+            Ticket,
+            id=ticket_id,
+            assigned_agent=request.user
+        )
+
+        complaint = ticket.complaint
+
+        suggested_reply = generate_agent_reply(
+            complaint.category,
+            complaint.subject,
+            complaint.description
+        )
+
+        return Response({
+            'ticket_id': ticket.id,
+            'ticket_number': ticket.ticket_number,
+            'suggested_reply': suggested_reply
+        })
+
 
 class CustomerTicketListView(generics.ListAPIView):
 

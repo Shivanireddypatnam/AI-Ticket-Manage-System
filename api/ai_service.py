@@ -2,7 +2,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
-
+from sklearn.metrics.pairwise import cosine_similarity
 
 # Training examples
 training_data = [
@@ -93,3 +93,69 @@ def summarize_complaint(subject, description):
     summary = " ".join(sentences[:2])
 
     return summary
+
+def get_faq_answer(user_question, faqs):
+
+    faq_questions = [faq.question for faq in faqs]
+
+    if not faq_questions:
+        return None
+
+    vectorizer = TfidfVectorizer()
+
+    faq_vectors = vectorizer.fit_transform(faq_questions)
+
+    user_vector = vectorizer.transform([user_question])
+
+    similarity_scores = cosine_similarity(
+        user_vector,
+        faq_vectors
+    )
+
+    best_match_index = similarity_scores.argmax()
+
+    best_score = similarity_scores[0][best_match_index]
+
+    if best_score < 0.25:
+        return None
+
+    return faqs[int(best_match_index)].answer
+
+
+def generate_agent_reply(category, subject, description):
+
+    category = category.upper()
+
+    if category == 'PAYMENT':
+        reply = (
+            "We apologize for the inconvenience. "
+            "We understand your payment-related concern. "
+            "Our support team will investigate the issue "
+            "and assist you with the next steps."
+        )
+
+    elif category == 'TECHNICAL':
+        reply = (
+            "We apologize for the inconvenience. "
+            "We understand that you are facing a technical issue. "
+            "Our support team will investigate the problem "
+            "and assist you in resolving it."
+        )
+
+    elif category == 'ACCOUNT':
+        reply = (
+            "Thank you for contacting us. "
+            "We understand your account-related concern. "
+            "Our support team will review your request "
+            "and assist you with the necessary steps."
+        )
+
+    else:
+        reply = (
+            "Thank you for contacting customer support. "
+            "We understand your concern. "
+            "Our support team will review your complaint "
+            "and assist you further."
+        )
+
+    return reply

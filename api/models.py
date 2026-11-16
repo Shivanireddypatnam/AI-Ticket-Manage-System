@@ -110,3 +110,16 @@ class TicketResponse(models.Model):
 
     def __str__(self):
         return f"Response for {self.ticket.ticket_number}"
+
+class FAQ(models.Model):
+
+    question = models.CharField(max_length=255, unique=True)
+
+    answer = models.TextField()
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question
