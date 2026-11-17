@@ -101,7 +101,7 @@ def get_faq_answer(user_question, faqs):
     if not faq_questions:
         return None
 
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words='english')
 
     faq_vectors = vectorizer.fit_transform(faq_questions)
 
