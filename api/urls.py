@@ -9,7 +9,9 @@ from .views import (
     AdminTicketListView,
     AdminComplaintListView,
     FAQChatbotView,
+    AdminAnalyticsView,
     AgentSuggestedReplyView
+
 )
 
 
@@ -64,5 +66,10 @@ urlpatterns = [
     'agent/tickets/<int:ticket_id>/suggest-reply/',
     AgentSuggestedReplyView.as_view(),
     name='agent-suggested-reply'
+    ),
+    path(
+    'admin/analytics/',
+    AdminAnalyticsView.as_view(),
+    name='admin-analytics'
     ),
 ]

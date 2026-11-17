@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import transaction
+from django.db.models import Count
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
@@ -19,7 +20,6 @@ from .serializers import (
 from accounts.permissions import IsCustomerRole, IsAgentRole, IsAdminRole
 
 from .ai_service import get_faq_answer , generate_agent_reply
-
 
 
 # Create your views here.
@@ -235,4 +235,44 @@ class FAQChatbotView(APIView):
         return Response({
             'question': question,
             'answer': answer
+        })
+
+
+class AdminAnalyticsView(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsAdminRole
+    ]
+
+    def get(self, request):
+
+        total_complaints = Complaint.objects.count()
+
+        total_tickets = Ticket.objects.count()
+
+        pending_complaints = Complaint.objects.filter(
+            status='PENDING'
+        ).count()
+
+        accepted_complaints = Complaint.objects.filter(
+            status='ACCEPTED'
+        ).count()
+        category_wise_complaints = Complaint.objects.values(
+         'category'
+        ).annotate(
+            total=Count('id')
+        ).order_by('category')
+        ticket_status_statistics = Ticket.objects.values(
+            'status'
+        ).annotate(
+         total=Count('id')
+        ).order_by('status')
+        return Response({
+            'total_complaints': total_complaints,
+            'total_tickets': total_tickets,
+            'pending_complaints': pending_complaints,
+            'accepted_complaints': accepted_complaints,
+            'category_wise_complaints': category_wise_complaints,
+            'ticket_status_statistics': ticket_status_statistics
         })
