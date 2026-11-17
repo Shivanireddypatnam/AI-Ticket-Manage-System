@@ -22,3 +22,6 @@ staticfiles/
 # IDE
 .vscode/
 .idea/
+# Python cache
+__pycache__/
+*.py[cod]
